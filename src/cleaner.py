@@ -25,7 +25,7 @@ class DataCleaner():
         return result
 
     @staticmethod
-    def knmi_rain_cleaner(path: str, skip_to_line: int) -> pd.DataFrame:
+    def knmi_cleaner(path: str, skip_to_line: int) -> pd.DataFrame:
         # Setup the start and enddate
         startdate = pd.to_datetime("2020-09-21")
         enddate = pd.to_datetime("2023-09-20")
@@ -33,10 +33,13 @@ class DataCleaner():
         # Read txt to dataframe in pandas
         df = pd.read_csv(path, skiprows=skip_to_line)
 
+        # Remove redundant spaces in column names
+        df.columns = df.columns.str.strip()
+
         # Set the date column to a date field
         df['YYYYMMDD'] = pd.to_datetime(df['YYYYMMDD'], format='%Y%m%d')
 
-        # Drop columns that only contain NaN values
+        # Drop columns that only contain NaN values and the station numbers as we don't need them
         df = df.dropna(axis=1, how='all')
 
         # Only keep data for the dates we are interested in
@@ -46,8 +49,13 @@ class DataCleaner():
         return df
 
 cleaner = DataCleaner()
-rain = cleaner.knmi_rain_cleaner("../data/rainfall/Weesp.txt", 22)
+rain_weesp = cleaner.knmi_cleaner("../data/rainfall/Weesp.txt", 22)
+air_temp = cleaner.knmi_cleaner("../data/airtemp/Schiphol.txt", 50)
 
-print(rain.head())
+weather_weesp = rain_weesp.merge(air_temp, on="YYYYMMDD")
+print(weather_weesp.columns)
+
+
+
 
 
