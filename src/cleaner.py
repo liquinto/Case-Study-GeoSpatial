@@ -6,7 +6,10 @@ class DataCleaner():
         pass
 
     @staticmethod
-    def rws_discharge_cleaner(df: pd.DataFrame) -> pd.DataFrame:
+    def rws_discharge_cleaner(path: str) -> pd.DataFrame:
+
+        df = pd.read_csv(path, sep=';')
+
         # Only include data that is annotated to be a normal value
         df = df[df["KWALITEITSOORDEEL_CODE"] == "Normale waarde"]
 
@@ -48,14 +51,19 @@ class DataCleaner():
 
         return df
 
-cleaner = DataCleaner()
-rain_weesp = cleaner.knmi_cleaner("../data/rainfall/Weesp.txt", 22)
-air_temp = cleaner.knmi_cleaner("../data/airtemp/Schiphol.txt", 50)
+# How to work with this model
 
-weather_weesp = rain_weesp.merge(air_temp, on="YYYYMMDD")
-print(weather_weesp.columns)
-
-
-
-
-
+# Initialize a DataCleaner object
+# cleaner = DataCleaner()
+#
+# Use the DataCleaner object to get the data neatly into a pandas dataframe.
+#
+# discharge_ommen = cleaner.rws_discharge_cleaner("../data/discharge/Ommen.csv")
+# discharge_millingen = cleaner.rws_discharge_cleaner("../data/discharge/Millingen.csv")
+# discharge_blaarthem = cleaner.rws_discharge_cleaner("../data/discharge/Blaarthem.csv")
+# rain_weesp = cleaner.knmi_cleaner("../data/rainfall/Weesp.txt", 22)
+# air_temp = cleaner.knmi_cleaner("../data/airtemp/Schiphol.txt", 50)
+#
+# Merge the DataFrame based on the date.
+#
+# weather_weesp = rain_weesp.merge(air_temp, on="YYYYMMDD")
