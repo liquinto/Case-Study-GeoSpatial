@@ -6,7 +6,7 @@ class DataCleaner():
         pass
 
     @staticmethod
-    def rws_clean_df(df: pd.DataFrame) -> pd.DataFrame:
+    def rws_discharge_cleaner(df: pd.DataFrame) -> pd.DataFrame:
         # Only include data that is annotated to be a normal value
         df = df[df["KWALITEITSOORDEEL_CODE"] == "Normale waarde"]
 
@@ -23,5 +23,31 @@ class DataCleaner():
         result["ALFANUMERIEKEWAARDE"]= result["ALFANUMERIEKEWAARDE"].round(2)
 
         return result
+
+    @staticmethod
+    def knmi_rain_cleaner(path: str, skip_to_line: int) -> pd.DataFrame:
+        # Setup the start and enddate
+        startdate = pd.to_datetime("2020-09-21")
+        enddate = pd.to_datetime("2023-09-20")
+
+        # Read txt to dataframe in pandas
+        df = pd.read_csv(path, skiprows=skip_to_line)
+
+        # Set the date column to a date field
+        df['YYYYMMDD'] = pd.to_datetime(df['YYYYMMDD'], format='%Y%m%d')
+
+        # Drop columns that only contain NaN values
+        df = df.dropna(axis=1, how='all')
+
+        # Only keep data for the dates we are interested in
+        mask = (df['YYYYMMDD'] >= startdate) & (df['YYYYMMDD'] < enddate)
+        df = df.loc[mask]
+
+        return df
+
+cleaner = DataCleaner()
+rain = cleaner.knmi_rain_cleaner("../data/rainfall/Weesp.txt", 22)
+
+print(rain.head())
 
 
