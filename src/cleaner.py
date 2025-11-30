@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from fontTools.feaLib import location
+
 
 class DataCleaner():
     def __init__(self):
@@ -8,7 +10,7 @@ class DataCleaner():
     @staticmethod
     def rws_discharge_cleaner(path: str) -> pd.DataFrame:
 
-        df = pd.read_csv(path, sep=';')
+        df = pd.read_csv(path, sep = None, engine = "python")
 
         # Only include data that is annotated to be a normal value
         df = df[df["KWALITEITSOORDEEL_CODE"] == "Normale waarde"]
@@ -24,6 +26,10 @@ class DataCleaner():
         
         # Round of the value of discharge to have 2
         result["ALFANUMERIEKEWAARDE"]= result["ALFANUMERIEKEWAARDE"].round(2)
+
+        # Rename the column such we can easily combine them later on.
+        result = result.rename(columns={'WAARNEMINGDATUM': 'YYYYMMDD'})
+        result['YYYYMMDD'] = pd.to_datetime(result['YYYYMMDD'], format='%d-%m-%Y')
 
         return result
 
@@ -51,19 +57,13 @@ class DataCleaner():
 
         return df
 
-# How to work with this model
+    def soil_data_cleaner(self, path: str, location: str) -> pd.DataFrame:
+        df = pd.read_csv(path)
+        filtered_df = df[df["MEETPUNT_IDENTIFICATIE"] == location]
+        pivoted_df = filtered_df.pivot(
+            index='MEETPUNT_IDENTIFICATIE',
+            columns='soil_category',
+            values='area'
+        ).reset_index()
 
-# Initialize a DataCleaner object
-# cleaner = DataCleaner()
-#
-# Use the DataCleaner object to get the data neatly into a pandas dataframe.
-#
-# discharge_ommen = cleaner.rws_discharge_cleaner("../data/discharge/Ommen.csv")
-# discharge_millingen = cleaner.rws_discharge_cleaner("../data/discharge/Millingen.csv")
-# discharge_blaarthem = cleaner.rws_discharge_cleaner("../data/discharge/Blaarthem.csv")
-# rain_weesp = cleaner.knmi_cleaner("../data/rainfall/Weesp.txt", 22)
-# air_temp = cleaner.knmi_cleaner("../data/airtemp/Schiphol.txt", 50)
-#
-# Merge the DataFrame based on the date.
-#
-# weather_weesp = rain_weesp.merge(air_temp, on="YYYYMMDD")
+        return pivoted_df
