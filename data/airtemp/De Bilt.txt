@@ -6,7 +6,7 @@ nmi.nl/kennis-en-datacentrum/achtergrond/centraal-nederland-temperatuur-cnt>.
 SOURCE: ROYAL NETHERLANDS METEOROLOGICAL INSTITUTE (KNMI)
 Comment: These time series are inhomogeneous because of station relocations and changes in observation techniques. As a result, these series are not suitable for
 trend analysis. For climate change studies we refer to the homogenized series of monthly temperatures of De Bilt <http://www.knmi.nl/kennis-en-datacentrum/achterg
-rond/gehomogeniseerde-reeks-maandtemperaturen-de-bilt> or the Central Netherlands Temperature <http://www.knmi.nl/kennis-en-datacentrum/achtergrond/centraal-neder
+rond/gehomogeniseerde-reeks-maandteFmperaturen-de-bilt> or the Central Netherlands Temperature <http://www.knmi.nl/kennis-en-datacentrum/achtergrond/centraal-neder
 land-temperatuur-cnt>.
 YYYYMMDD  = Datum (YYYY=jaar MM=maand DD=dag) / Date (YYYY=year MM=month DD=day)
 DDVEC     = Vectorgemiddelde windrichting in graden (360=noord, 90=oost, 180=zuid, 270=west, 0=windstil/variabel). Zie http://www.knmi.nl/kennis-en-datacentrum/achtergrond/klimatologische-brochures-en-boeken / Vector mean wind direction in degrees (360=north, 90=east, 180=south, 270=west, 0=calm/variable)
