@@ -15,6 +15,7 @@ class SimpleModel:
                  lag_b: int,
                  w_q: float,
                  w_b: float,
+                 w_t: float,
                  ) -> None:
         """
         alpha_w: Higher values imply slower drying of the catchment and longer memory of past rainfall.
@@ -39,6 +40,7 @@ class SimpleModel:
         self.perc_rate = perc_rate
         self.w_q = w_q
         self.w_b = w_b
+        self.w_t = w_t
 
         # States
         self.wetness = 0.0
@@ -92,7 +94,7 @@ class SimpleModel:
         self.Q = (
             self.w_q * routed_q +
             self.w_b * routed_b +
-            0.6 * Qt_minus_1
+            self.w_t * Qt_minus_1
         )
 
         return {
@@ -125,6 +127,6 @@ class SimpleModel:
             out = self.step(Pt=Pt, PET=PET, Qt_minus_1=Qt_prev)
             results.append(out)
 
-            Qt_prev = out["Q"]
+            Qt_prev = float(row['ALFANUMERIEKEWAARDE'])
 
         return results
