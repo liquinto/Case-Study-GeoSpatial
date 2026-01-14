@@ -1,34 +1,35 @@
+import pandas as pd
+
 from SimpleModel import SimpleModel
 from BaseModel import BaseModel
-import pandas as pd
 from sklearn.metrics import mean_squared_error
+from model_calibrator import ModelCalibrator
+from CONST import *
 
 def main():
-    model = SimpleModel(
-        alpha_w=0.6,
-        Idry=250.0,
-        Iwet=30.0,
-        Smax=800.0,
-        Emax=5.0,
-        perc_rate=0.01,
-        lag_q=0,
-        lag_b=5,
-        w_q=0.1,
-        w_b=0.85,
-        w_t=0.9
-    )
     df = pd.read_csv("../data/cleaned/Millingen.csv")
-    results = model.run_dataframe(
+
+    calibrator = ModelCalibrator(
+        model_class=SimpleModel,
+        param_names=SIMPLE_MODEL_PARAM_NAMES,
+        param_ranges=SIMPLE_MODEL_PARAM_RANGES,
+        param_steps=SIMPLE_MODEL_PARAM_STEPS,
+        score_func=SimpleModel.score,
+        max_iter=100000
+    )
+    best_params, best_score = calibrator.calibrate(
+        fixed_params={},
+        tune_params_init=SIMPLE_MODEL_INITIAL_PARAMS,
         df=df,
+        target=df["ALFANUMERIEKEWAARDE"],
+        q_col="Q",
+        n=31,
         pt_col="RD",
         pet_col="EV24",
         q0=0.0
     )
-    results_df = pd.DataFrame(results)
-    results_df["date"] = df["YYYYMMDD"].values
-    results_df.to_csv(path_or_buf="../data/results/Millingen.csv", index=False)
-
-    print(f'MSE Simple Model: {mean_squared_error(df["ALFANUMERIEKEWAARDE"][:31], results_df["Q"][:31])}')
+    print("Best parameters for SimpleModel:", best_params)
+    print("Best MSE after calibration:", best_score)
 
     basemodel = BaseModel()
     basemodel.fit(X = df, y = df["ALFANUMERIEKEWAARDE"])
@@ -38,5 +39,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

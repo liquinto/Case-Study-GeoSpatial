@@ -1,6 +1,7 @@
 from collections import deque
 from typing import Any, List, Dict
 import pandas as pd
+from sklearn.metrics import mean_squared_error
 
 
 class SimpleModel:
@@ -130,3 +131,8 @@ class SimpleModel:
             Qt_prev = float(row['ALFANUMERIEKEWAARDE'])
 
         return results
+
+    def score(model, df, target, q_col="Q", n=31, pt_col="RD", pet_col="EV24", q0=0.0):
+        results = model.run_dataframe(df=df, pt_col=pt_col, pet_col=pet_col, q0=q0)
+        results_df = pd.DataFrame(results)
+        return mean_squared_error(target[:n], results_df[q_col][:n])
