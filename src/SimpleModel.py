@@ -60,42 +60,42 @@ class SimpleModel:
         """
 
         # --- Wetness update ---
-        self.wetness = self.alpha_w * self.wetness + (1 - self.alpha_w) * Pt
-        wt = min(self.wetness / self.Idry, 1.0)
+        self.wetness = self.alpha_w * self.wetness + (1 - self.alpha_w) * Pt  # Update catchment wetness state
+        wt = min(self.wetness / self.Idry, 1.0)  # Wetness index (0-1), relative to dry infiltration capacity
 
         # --- Infiltration capacity ---
-        Icap = self.Idry * (1 - wt) + self.Iwet * wt
-        Pin = min(Pt, Icap)
-        Pq = Pt - Pin
+        Icap = self.Idry * (1 - wt) + self.Iwet * wt  # Infiltration capacity, interpolated between dry and wet
+        Pin = min(Pt, Icap)  # Infiltrated precipitation
+        Pq = Pt - Pin  # Quick flow (surface runoff)
 
         # --- Soil store ---
-        self.soil += Pin
-        self.soil = min(self.soil, self.Smax)
+        self.soil += Pin  # Add infiltrated water to soil storage
+        self.soil = min(self.soil, self.Smax)  # Limit soil storage to maximum capacity
 
         # --- Evaporation ---
-        Et = min(PET, self.Emax * (self.soil / self.Smax))
-        self.soil -= Et
+        Et = min(PET, self.Emax * (self.soil / self.Smax))  # Actual evapotranspiration
+        self.soil -= Et  # Remove evaporated water from soil
 
         # --- Percolation ---
-        perc = self.perc_rate * wt * self.soil
-        self.soil -= perc
-        Qb = perc
+        perc = self.perc_rate * wt * self.soil  # Percolation to baseflow
+        self.soil -= perc  # Remove percolated water from soil
+        Qb = perc  # Baseflow
 
         # --- Quick flow ---
-        Qq = Pq  # 100% routed for now
+        Qq = Pq  # Quick flow (surface runoff), 100% routed for now
 
         # --- Routing ---
-        self.quick_queue.append(Qq)
-        routed_q = self.quick_queue.popleft()
+        self.quick_queue.append(Qq)  # Add quick flow to routing queue
+        routed_q = self.quick_queue.popleft()  # Routed quick flow
 
-        self.base_queue.append(Qb)
-        routed_b = self.base_queue.popleft()
+        self.base_queue.append(Qb)  # Add baseflow to routing queue
+        routed_b = self.base_queue.popleft()  # Routed baseflow
 
         # --- Discharge ---
         self.Q = (
-            self.w_q * routed_q +
-            self.w_b * routed_b +
-            self.w_t * Qt_minus_1
+            self.w_q * routed_q +  # Weighted routed quick flow
+            self.w_b * routed_b +  # Weighted routed baseflow
+            self.w_t * Qt_minus_1   # Weighted previous discharge
         )
 
         return {
