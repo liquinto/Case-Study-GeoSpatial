@@ -1,25 +1,25 @@
 import pandas as pd
 
-from SimpleModel import SimpleModel
 from BaseModel import BaseModel
+from ComplexModel import ComplexModel
 from sklearn.metrics import mean_squared_error
 from model_calibrator import ModelCalibrator
 from CONST import *
 
 def main():
-    df = pd.read_csv("../data/cleaned/Millingen.csv")
+    df = pd.read_csv("../data/cleaned/Ommen.csv")
 
     calibrator = ModelCalibrator(
-        model_class=SimpleModel,
-        param_names=SIMPLE_MODEL_PARAM_NAMES,
-        param_ranges=SIMPLE_MODEL_PARAM_RANGES,
-        param_steps=SIMPLE_MODEL_PARAM_STEPS,
-        score_func=SimpleModel.score,
-        max_iter=100000
+        model_class=ComplexModel,
+        param_names=COMPLEX_MODEL_PARAM_NAMES,
+        param_ranges=COMPLEX_MODEL_PARAM_RANGES,
+        param_steps=COMPLEX_MODEL_PARAM_STEPS,
+        score_func=ComplexModel.score,
+        max_iter=100000000
     )
     best_params, best_score = calibrator.calibrate(
-        fixed_params={},
-        tune_params_init=SIMPLE_MODEL_INITIAL_PARAMS,
+        fixed_params={"location": "Ommen"},
+        tune_params_init=COMPLEX_MODEL_INITIAL_PARAMS_50,
         df=df,
         target=df["ALFANUMERIEKEWAARDE"],
         q_col="Q",
@@ -28,7 +28,7 @@ def main():
         pet_col="EV24",
         q0=0.0
     )
-    print("Best parameters for SimpleModel:", best_params)
+    print("Best parameters for ComplexModel:", best_params)
     print("Best MSE after calibration:", best_score)
 
     basemodel = BaseModel()
