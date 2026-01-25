@@ -7,10 +7,10 @@ This project models and analyzes hydrological data using KNMI weather, precipita
 
 ## Contributors
 
-- Jakub Marcinek, 8560242
-- Mattijs Gietman, 6559433 
-- Ilse van Deventer, 9996974
-- Daan Kamphuis, 9508988
+- Jakub
+- Mattijs
+- Ilse
+- Daan
 
 ## Structure
 - **src/**: Source code for models, data cleaning, and combination.
