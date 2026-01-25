@@ -1,6 +1,59 @@
-# Readme
+# Predicting daily stream discharge - Readme
 
-## Explenation of variables
+## Project Overview
+
+This project models and analyzes hydrological data using KNMI weather, precipitation, discharge, and soil type datasets. It includes data cleaning, combination, and modeling scripts to predict discharge and evaluate model performance.
+<br> Note: This is a simplified version of a hydrological model for educational purposes, please use `ComplexModel_V2` to get the same results as in the paper.
+
+## Contributors
+
+- Jakub Marcinek, 8560242
+- Mattijs Gietman, 6559433 
+- Ilse van Deventer, 9996974
+- Daan Kamphuis, 9508988
+
+## Structure
+- **src/**: Source code for models, data cleaning, and combination.
+- **data/**: Contains raw and cleaned data files for weather, rainfall, discharge, and soil type.
+
+## Main Components
+- **SimpleModel**: Implements a conceptual hydrological model with configurable parameters for soil and water processes.
+- **ComplexModel_V2**: Advanced hydrological model with additional features.
+- **BaseModel**: Baseline model predicting average discharge.
+- **DataCleaner**: Cleans and preprocesses raw data files.
+- **DataCombiner**: Merges datasets by date.
+
+## Usage
+
+### 1. Prepare Data
+Place raw data files in the appropriate folders under `data/`.
+
+### 2. Clean and Combine Data
+Run:
+```bash
+python src/main_data.py
+```
+This will clean, combine, and save processed data to `data/cleaned/`.
+
+### 3. Run Models
+Run:
+```bash
+python src/main.py
+```
+This will execute the models and save results to `data/results/`.
+
+## Requirements
+- Python 3.8+
+- pandas
+- numpy
+- scikit-learn
+
+Install dependencies with:
+```bash
+pip install pandas numpy scikit-learn
+```
+
+## Explanation of Variables
 
 ### KNMI Weather Variables
 
