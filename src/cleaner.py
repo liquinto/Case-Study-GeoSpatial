@@ -10,16 +10,17 @@ class DataCleaner():
     @staticmethod
     def rws_discharge_cleaner(path: str) -> pd.DataFrame:
 
-        df = pd.read_csv(path, sep = None, engine = "python")
+        df = pd.read_csv(path, sep = ';', engine = "python", encoding = "ISO-8859-1")
 
         # Only include data that is annotated to be a normal value
         df = df[df["KWALITEITSOORDEEL_CODE"] == "Normale waarde"]
 
         # Keep only the columns that we are interested in
-        data = df[["MEETPUNT_IDENTIFICATIE", "WAARNEMINGDATUM", "WAARNEMINGTIJD (MET/CET)", "ALFANUMERIEKEWAARDE"]].copy()
+        data = df[["MEETPUNT_IDENTIFICATIE", "WAARNEMINGDATUM", "WAARNEMINGTIJD (MET/CET)", "NUMERIEKEWAARDE"]].copy()
 
         # Change the column: 'ALFANUMERIEKEWAARDE' to be a float value
-        data["ALFANUMERIEKEWAARDE"] = data["ALFANUMERIEKEWAARDE"].astype(float)
+        data["NUMERIEKEWAARDE"] = data["NUMERIEKEWAARDE"].str.replace(',', '.')
+        data["ALFANUMERIEKEWAARDE"] = data["NUMERIEKEWAARDE"].astype(float)
 
         # Find the mean value of the discharge in a day and only keep 1 entry for a day
         result = data.groupby(["WAARNEMINGDATUM"], as_index=False)["ALFANUMERIEKEWAARDE"].mean()
@@ -36,8 +37,8 @@ class DataCleaner():
     @staticmethod
     def knmi_cleaner(path: str, skip_to_line: int) -> pd.DataFrame:
         # Setup the start and enddate
-        startdate = pd.to_datetime("2020-09-21")
-        enddate = pd.to_datetime("2023-09-20")
+        startdate = pd.to_datetime("2024-09-21")
+        enddate = pd.to_datetime("2025-09-20")
 
         # Read txt to dataframe in pandas
         df = pd.read_csv(path, skiprows=skip_to_line)

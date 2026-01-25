@@ -15,10 +15,10 @@ def main():
     4. Write the data to a csv file.
     '''
     airtemp_dir = "../data/airtemp/"
-    discharge_dir = "../data/discharge/"
+    discharge_dir = "../data/test_discharge/"
     rain_dir = "../data/rainfall/"
     soil_dir = "../data/soil_type/"
-    cleaned_dir = "../data/cleaned/"
+    cleaned_dir = "../data/test_data/"
 
     cleaner = DataCleaner()
 
@@ -26,7 +26,7 @@ def main():
         "soil_type": cleaner.soil_data_cleaner(f"{soil_dir}soil_type.csv", "Maarssen"),
         "rainfall": cleaner.knmi_cleaner(f"{rain_dir}De Bilt.txt", 22),
         "airtemp": cleaner.knmi_cleaner(f"{airtemp_dir}De Bilt.txt", 50),
-        "discharge": cleaner.rws_discharge_cleaner(f"{discharge_dir}Maarsen.csv"),
+        "discharge": cleaner.rws_discharge_cleaner(f"{discharge_dir}Maarssen.csv"),
     }
 
     millingen: dict[str, Optional[pd.DataFrame]] = {
@@ -51,7 +51,9 @@ def main():
     }
 
     data_combiner = DataCombiner()
-
+    print(maarssen["rainfall"])
+    print(maarssen["airtemp"])
+    print(maarssen["discharge"])
     maarssen_df = data_combiner.combine([maarssen["rainfall"], maarssen["airtemp"], maarssen["discharge"]])
     millingen_df = data_combiner.combine([millingen["rainfall"], millingen["airtemp"], millingen["discharge"]])
     ommen_df = data_combiner.combine([ommen["rainfall"], ommen["airtemp"], ommen["discharge"]])
@@ -73,10 +75,10 @@ def main():
         if col != 'MEETPUNT_IDENTIFICATIE':
             weesp_df[col] = weesp["soil_type"][col].values[0]
 
-    maarssen_df.to_csv(f'{cleaned_dir}Maarssen', index=False)
-    millingen_df.to_csv(f'{cleaned_dir}Millingen', index=False)
-    ommen_df.to_csv(f'{cleaned_dir}Ommen', index=False)
-    weesp_df.to_csv(f'{cleaned_dir}Weesp', index=False)
+    maarssen_df.to_csv(f'{cleaned_dir}Maarssen.csv', index=False)
+    millingen_df.to_csv(f'{cleaned_dir}Millingen.csv', index=False)
+    ommen_df.to_csv(f'{cleaned_dir}Ommen.csv', index=False)
+    weesp_df.to_csv(f'{cleaned_dir}Weesp.csv', index=False)
 
 
 if __name__ == "__main__":

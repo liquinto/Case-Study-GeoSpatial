@@ -58,8 +58,8 @@ COMPLEX_MODEL_PARAM_RANGES = {
     "perc_rate": (0.001, 0.1),
     "lag_q": (0, 10),
     "lag_b": (10, 30),
-    "w_q": (1.0, 1000.0),
-    "w_b": (1.0, 1000.0),
+    "w_q": (1.0, 10000.0),
+    "w_b": (1.0, 10000.0),
     "w_t": (0.0, 1.0),
     "capacity_clay": (10.0, 500.0),
     "capacity_gravel": (10.0, 500.0),
@@ -136,6 +136,133 @@ COMPLEX_MODEL_PARAM_STEPS = {
     "gw_drain_factor": 0.01
 }
 
+# --- COMPLEX_MODEL_V2 variables (for ComplexModel_V2 only) ---
+COMPLEX_MODEL_V2_PARAM_NAMES = [
+    "alpha_w", "Idry", "Iwet", "Emax", "perc_rate", "lag_q", "lag_b", "w_q", "w_b", "w_t",
+    "capacity_clay", "capacity_gravel", "capacity_organic", "capacity_sand_coarse",
+    "capacity_sand_fine", "capacity_sand_medium", "capacity_silt", "capacity_urban", "capacity_stone",
+    "field_capacity_clay", "field_capacity_gravel", "field_capacity_organic", "field_capacity_sand_coarse",
+    "field_capacity_sand_fine", "field_capacity_sand_medium", "field_capacity_silt", "field_capacity_urban", "field_capacity_stone",
+    "w_wetness_percipitation", "w_wetness_soilstore", "gw_init",
+    "gw_recharge_factor", "gw_drain_factor", "Gmax", "quickflow_fraction"
+]
+
+COMPLEX_MODEL_V2_PARAM_RANGES = {
+    "alpha_w": (0.0, 1.0),
+    "Idry": (1.0, 500.0),
+    "Iwet": (1.0, 100.0),
+    "Emax": (1.0, 10.0),
+    "perc_rate": (0.001, 0.1),
+    "lag_q": (0, 10),
+    "lag_b": (10, 30),
+    "w_q": (1.0, 10000.0),
+    "w_b": (1.0, 10000.0),
+    "w_t": (0.0, 1.0),
+    # Porosity/saturation values
+    "capacity_clay": (0.45, 0.60),
+    "capacity_gravel": (0.25, 0.35),
+    "capacity_organic": (0.75, 0.90),
+    "capacity_sand_coarse": (0.30, 0.39),
+    "capacity_sand_fine": (0.33, 0.41),
+    "capacity_sand_medium": (0.32, 0.40),
+    "capacity_silt": (0.40, 0.50),
+    "capacity_urban": (0.35, 0.45),
+    "capacity_stone": (0.0, 0.05),
+    # Field capacity values
+    "field_capacity_clay": (0.32, 0.40),
+    "field_capacity_gravel": (0.12, 0.18),
+    "field_capacity_organic": (0.40, 0.48),
+    "field_capacity_sand_coarse": (0.08, 0.12),
+    "field_capacity_sand_fine": (0.12, 0.16),
+    "field_capacity_sand_medium": (0.11, 0.15),
+    "field_capacity_silt": (0.27, 0.33),
+    "field_capacity_urban": (0.13, 0.17),
+    "field_capacity_stone": (0.0, 0.01),
+    "w_wetness_percipitation": (0.0, 1.0),
+    "w_wetness_soilstore": (0.0, 1.0),
+    "gw_init": (0.0, 1000.0),
+    "gw_recharge_factor": (0.01, 0.5),
+    "gw_drain_factor": (0.01, 0.5),
+    "Gmax": (100.0, 1000.0),
+    "quickflow_fraction": (0.01, 0.5)  # Allow 1% to 50% of precipitation to always go to quick flow
+}
+
+COMPLEX_MODEL_V2_INITIAL_PARAMS = {
+    "alpha_w": 0.5,
+    "Idry": 250.0,
+    "Iwet": 50.0,
+    "Emax": 5.0,
+    "perc_rate": 0.01,
+    "lag_q": 5,
+    "lag_b": 15,
+    "w_q": 1.0,
+    "w_b": 1.0,
+    "w_t": 0.5,
+    "capacity_clay": 0.525,
+    "capacity_gravel": 0.30,
+    "capacity_organic": 0.825,
+    "capacity_sand_coarse": 0.345,
+    "capacity_sand_fine": 0.37,
+    "capacity_sand_medium": 0.36,
+    "capacity_silt": 0.45,
+    "capacity_urban": 0.40,
+    "capacity_stone": 0.0,
+    "field_capacity_clay": 0.36,
+    "field_capacity_gravel": 0.15,
+    "field_capacity_organic": 0.44,
+    "field_capacity_sand_coarse": 0.10,
+    "field_capacity_sand_fine": 0.14,
+    "field_capacity_sand_medium": 0.13,
+    "field_capacity_silt": 0.30,
+    "field_capacity_urban": 0.15,
+    "field_capacity_stone": 0.0,
+    "w_wetness_percipitation": 0.5,
+    "w_wetness_soilstore": 0.5,
+    "gw_init": 250.0,
+    "gw_recharge_factor": 0.1,
+    "gw_drain_factor": 0.05,
+    "Gmax": 500.0,
+    "quickflow_fraction": 0.1  # Default 10% always goes to quick flow
+}
+
+COMPLEX_MODEL_V2_PARAM_STEPS = {
+    "alpha_w": 0.05,
+    "Idry": 10.0,
+    "Iwet": 2.0,
+    "Emax": 0.5,
+    "perc_rate": 0.001,
+    "lag_q": 1,
+    "lag_b": 1,
+    "w_q": 1,
+    "w_b": 1,
+    "w_t": 0.05,
+    "capacity_clay": 0.01,
+    "capacity_gravel": 0.01,
+    "capacity_organic": 0.01,
+    "capacity_sand_coarse": 0.01,
+    "capacity_sand_fine": 0.01,
+    "capacity_sand_medium": 0.01,
+    "capacity_silt": 0.01,
+    "capacity_urban": 0.01,
+    "capacity_stone": 0.01,
+    "field_capacity_clay": 0.01,
+    "field_capacity_gravel": 0.01,
+    "field_capacity_organic": 0.01,
+    "field_capacity_sand_coarse": 0.01,
+    "field_capacity_sand_fine": 0.01,
+    "field_capacity_sand_medium": 0.01,
+    "field_capacity_silt": 0.01,
+    "field_capacity_urban": 0.01,
+    "field_capacity_stone": 0.01,
+    "w_wetness_percipitation": 0.05,
+    "w_wetness_soilstore": 0.05,
+    "gw_init": 50.0,
+    "gw_recharge_factor": 0.01,
+    "gw_drain_factor": 0.01,
+    "Gmax": 50.0,
+    "quickflow_fraction": 0.01
+}
+
 SOIL_PERCENTAGES = {
     "Maarssen": {
         "clay": 0.03,
@@ -204,3 +331,7 @@ SIMPLE_MODEL_INITIAL_PARAMS_75 = generate_initial_params(SIMPLE_MODEL_PARAM_RANG
 COMPLEX_MODEL_INITIAL_PARAMS_25 = generate_initial_params(COMPLEX_MODEL_PARAM_RANGES, 0.25)
 COMPLEX_MODEL_INITIAL_PARAMS_50 = generate_initial_params(COMPLEX_MODEL_PARAM_RANGES, 0.5)
 COMPLEX_MODEL_INITIAL_PARAMS_75 = generate_initial_params(COMPLEX_MODEL_PARAM_RANGES, 0.75)
+
+COMPLEX_MODEL_INITIAL_PARAMS_V2_25 = generate_initial_params(COMPLEX_MODEL_V2_PARAM_RANGES, 0.25)
+COMPLEX_MODEL_INITIAL_PARAMS_V2_50 = generate_initial_params(COMPLEX_MODEL_V2_PARAM_RANGES, 0.5)
+COMPLEX_MODEL_INITIAL_PARAMS_V2_75 = generate_initial_params(COMPLEX_MODEL_V2_PARAM_RANGES, 0.75)

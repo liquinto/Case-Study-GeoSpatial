@@ -135,4 +135,7 @@ class SimpleModel:
     def score(model, df, target, q_col="Q", n=31, pt_col="RD", pet_col="EV24", q0=0.0):
         results = model.run_dataframe(df=df, pt_col=pt_col, pet_col=pet_col, q0=q0)
         results_df = pd.DataFrame(results)
-        return mean_squared_error(target[:n], results_df[q_col][:n])
+        results_df['target'] = target
+        results_df["date"] = df['YYYYMMDD']
+        results_df[n:][['date','Q', 'target']].to_csv("../data/final_results/simple_model_Maarssen.csv", index=False)
+        return mean_squared_error(target[n:], results_df[q_col][n:])
