@@ -1,25 +1,25 @@
 import pandas as pd
 
-from SimpleModel import SimpleModel
 from BaseModel import BaseModel
+from ComplexModel_V2 import ComplexModel_V2
 from sklearn.metrics import mean_squared_error
 from model_calibrator import ModelCalibrator
 from CONST import *
 
 def main():
-    df = pd.read_csv("../data/cleaned/Maarssen.csv")
+    df = pd.read_csv("../data/cleaned/Weesp.csv")
 
     calibrator = ModelCalibrator(
-        model_class=SimpleModel,
-        param_names=SIMPLE_MODEL_PARAM_NAMES,
-        param_ranges=SIMPLE_MODEL_PARAM_RANGES,
-        param_steps=SIMPLE_MODEL_PARAM_STEPS,
-        score_func=SimpleModel.score,
+        model_class=ComplexModel_V2,
+        param_names=COMPLEX_MODEL_V2_PARAM_NAMES,
+        param_ranges=COMPLEX_MODEL_V2_PARAM_RANGES,
+        param_steps=COMPLEX_MODEL_V2_PARAM_STEPS,
+        score_func=ComplexModel_V2.score,
         max_iter=10000
     )
     best_params, best_score = calibrator.calibrate(
-        fixed_params={},
-        tune_params_init=SIMPLE_MODEL_INITIAL_PARAMS_50,
+        fixed_params={"location": "Weesp"},
+        tune_params_init=COMPLEX_MODEL_INITIAL_PARAMS_V2_50,
         df=df,
         target=df["ALFANUMERIEKEWAARDE"],
         q_col="Q",
@@ -28,7 +28,7 @@ def main():
         pet_col="EV24",
         q0=0.0
     )
-    print("Best parameters for SimpleModel:", best_params)
+    print("Best parameters for ComplexModel:", {k: round(v, 2) for k, v in best_params.items()})
     print("Best MSE after calibration:", best_score)
 
     basemodel = BaseModel()
@@ -37,10 +37,9 @@ def main():
     print(f'MSE Base Model: {mean_squared_error(df["ALFANUMERIEKEWAARDE"], result_df_basemodel)}')
 
     print("Running on new data with calibrated SimpleModel...")
-    df_new = pd.read_csv("../data/test_data/Maarssen.csv")
-    simple_model = SimpleModel(**best_params)
-    score = SimpleModel.score(
-        model=simple_model,
+    df_new = pd.read_csv("../data/test_data/Weesp.csv")
+    complex_model_v2 = ComplexModel_V2(**best_params)
+    score = complex_model_v2.score(
         df=df_new,
         target=df_new["ALFANUMERIEKEWAARDE"],
         q_col="Q",

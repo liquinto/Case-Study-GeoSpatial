@@ -5,7 +5,7 @@ from sklearn.metrics import mean_squared_error
 from CONST import *
 
 
-class ComplexModel():
+class ComplexModel_V2():
     def __init__(self,
                  alpha_w: float,
                  Idry: float,
@@ -26,14 +26,23 @@ class ComplexModel():
                  capacity_silt: float,
                  capacity_urban: float,
                  capacity_stone: float,
+                 field_capacity_clay: float,
+                 field_capacity_gravel: float,
+                 field_capacity_organic: float,
+                 field_capacity_sand_coarse: float,
+                 field_capacity_sand_fine: float,
+                 field_capacity_sand_medium: float,
+                 field_capacity_silt: float,
+                 field_capacity_urban: float,
+                 field_capacity_stone: float,
                  w_wetness_percipitation: float,
                  w_wetness_soilstore: float,
-                 location: str,
-                 Scf: float = 50.0,  # Field capacity threshold
-                 Gmax: float = 500.0,  # Maximum groundwater depth
-                 gw_init: float = 250.0,  # Initial groundwater depth
-                 gw_recharge_factor: float = 0.1,  # How percolation affects GW depth
-                 gw_drain_factor: float = 0.05,  # How baseflow affects GW depth
+                 gw_init: float,
+                 gw_recharge_factor: float,
+                 gw_drain_factor: float,
+                 Gmax: float,
+                 quickflow_fraction: float = 0.1,
+                 location: str = "Weesp"
                  ) -> None:
         """
         Additional parameters compared to SimpleModel:
@@ -79,18 +88,27 @@ class ComplexModel():
         self.capacity_silt = capacity_silt
         self.capacity_urban = capacity_urban
         self.capacity_stone = capacity_stone
+        # Field capacity for each soil type
+        self.field_capacity_clay = field_capacity_clay
+        self.field_capacity_gravel = field_capacity_gravel
+        self.field_capacity_organic = field_capacity_organic
+        self.field_capacity_sand_coarse = field_capacity_sand_coarse
+        self.field_capacity_sand_fine = field_capacity_sand_fine
+        self.field_capacity_sand_medium = field_capacity_sand_medium
+        self.field_capacity_silt = field_capacity_silt
+        self.field_capacity_urban = field_capacity_urban
+        self.field_capacity_stone = field_capacity_stone
 
         # Wetness weights
         self.w_wetness_percipitation = w_wetness_percipitation
         self.w_wetness_soilstore = w_wetness_soilstore
 
         # Groundwater parameters
-        self.Scf = Scf
-        self.Gmax = Gmax
         self.gw_recharge_factor = gw_recharge_factor
         self.gw_drain_factor = gw_drain_factor
+        self.Gmax = Gmax
+        self.quickflow_fraction = quickflow_fraction
 
-        # Calculate location Smax from perentages of soil type
         self.Smax = (self.capacity_clay * SOIL_PERCENTAGES[location]["clay"] +
                      self.capacity_gravel * SOIL_PERCENTAGES[location]["gravel"] +
                      self.capacity_organic * SOIL_PERCENTAGES[location]["organic"] +
@@ -101,6 +119,16 @@ class ComplexModel():
                      self.capacity_urban * SOIL_PERCENTAGES[location]["urban"] +
                      self.capacity_stone * SOIL_PERCENTAGES[location]["stone"]
                      )
+        self.Scf = (self.field_capacity_clay * SOIL_PERCENTAGES[location]["clay"] +
+                    self.field_capacity_gravel * SOIL_PERCENTAGES[location]["gravel"] +
+                    self.field_capacity_organic * SOIL_PERCENTAGES[location]["organic"] +
+                    self.field_capacity_sand_coarse * SOIL_PERCENTAGES[location]["sand_coarse"] +
+                    self.field_capacity_sand_fine * SOIL_PERCENTAGES[location]["sand_fine"] +
+                    self.field_capacity_sand_medium * SOIL_PERCENTAGES[location]["sand_medium"] +
+                    self.field_capacity_silt * SOIL_PERCENTAGES[location]["silt"] +
+                    self.field_capacity_urban * SOIL_PERCENTAGES[location]["urban"] +
+                    self.field_capacity_stone * SOIL_PERCENTAGES[location]["stone"]
+                    )
 
     def step(self, Pt, PET, Qt_minus_1=0.0) -> dict[str, Any]:
         """
@@ -116,7 +144,7 @@ class ComplexModel():
         # Infiltration capacity
         Icap = self.Idry * (1 - wt) + self.Iwet * wt
         Pin = min(Pt, Icap)
-        Pq = Pt - Pin
+        Qq = Pt - Pin
 
         # Soil store
         self.soil += Pin
@@ -139,9 +167,6 @@ class ComplexModel():
         # Update groundwater depth
         self.groundwater = self.groundwater - self.gw_recharge_factor * perc + self.gw_drain_factor * Qb
         self.groundwater = max(0.0, min(self.groundwater, self.Gmax))
-
-        # Quick flow
-        Qq = Pq  # Surface runoff
 
         # Routing
         self.quick_queue.append(Qq)
@@ -198,5 +223,7 @@ class ComplexModel():
         """
         results = self.run_dataframe(df=df, pt_col=pt_col, pet_col=pet_col, q0=q0)
         results_df = pd.DataFrame(results)
-        print(len(target[:n]))
+        results_df['target'] = target
+        results_df["date"] = df['YYYYMMDD']
+        results_df[n:].to_csv("../data/final_results/complex_model_Weesp.csv", index=False)
         return mean_squared_error(target[:n], results_df[q_col][:n])
